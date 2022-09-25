@@ -1,4 +1,4 @@
-from sympy import Symbol, printing, sympify, diff
+from sympy import Abs, diff, Float, nan, printing, sympify, Symbol, zoo
 
 x = Symbol('x')
 
@@ -15,24 +15,25 @@ def clear_screen():
 
 def portada():
     clear_screen()
-    print("Universidad Nacional Autónoma de México")
-    print("Facultad de Estudios Superiores Acatlán\n")
+    datos = ["Universidad Nacional Autónoma de México",
+             "Facultad de Estudios Superiores Acatlán",
+             "Matemáticas Aplicadas y Computación\n",
+             "{:-^47}\n".format(""),
+             "Programa 1:",
+             "Métodos de Solución de Ecuaciones No Lineales\n",
+             "Alcaraz López Bella Samara",
+             "Camargo Badillo Luis Mauricio",
+             "Leon Valdés Duhart Guillermo Arturo",
+             "López Díaz Diego\n",
+             "Métodos Numéricos I",
+             "Grupo 1301\n",
+             "{:-^47}\n".format(""),
+             "Presiona enter para continuar"]
 
-    print("---------------------------------------\n")
+    for dato in datos:
+        print(" {:^47} ".format(dato))
 
-    print("Programa 1:\nMétodos de Solución de Ecuaciones No Lineales\n")
-
-    print("Camargo Badillo Luis Mauricio")
-    print("Leon Valdés Duhart Guillermo Arturo")
-    print("???")
-    print("???\n")
-
-    print("Métodos Numéricos I")
-    print("Grupo 1301\n")
-
-    print("---------------------------------------\n")
-
-    input("Presiona enter para continuar")
+    input()
 
 #########
 # Menús #
@@ -139,7 +140,7 @@ def maxIt_toler_checks():
     # Tolerancia y sus checks
     while True:
         try:
-            toler = float(input("• Tolerancia (error relativo): "))
+            toler = Float(input("• Tolerancia (error relativo): "))
         except:
             print("\nIntroduzca un número real.\n")
             continue
@@ -177,8 +178,8 @@ def trigger_metodo():
 
             try:
 
-                a = float(a)
-                b = float(input("• Valor de b (extremo derecho): "))
+                a = Float(a)
+                b = Float(input("• Valor de b (extremo derecho): "))
             except:
                 print("\nIntroduzca números reales.\n")
                 continue
@@ -188,23 +189,23 @@ def trigger_metodo():
                 fb = func.evalf(subs={x: b})
             except:
                 print(
-                    f"\nLa función no está definida en {a} o en {b}. Intenta con otro intervalo.\n")
+                    f"\nLa función no está definida en {float(a)} o en {float(b)}. Intenta con otro intervalo.\n")
                 continue
 
             try:
-                menor_cero = (fa * fb) < 0 
+                menor_cero = (fa * fb) < 0
             except:
                 print(
-                    f"\nLa función evaluada en {a} o en {b} da como resultado un número complejo. Intenta con otro intervalo.\n")
+                    f"\nLa función evaluada en {float(a)} o en {float(b)} da como resultado un número complejo. Intenta con otro intervalo.\n")
                 continue
 
             if menor_cero:
                 break
             else:
                 print(
-                    f"\nLa función evaluada en {a} y en {b} tiene signos iguales.")
+                    f"\nLa función evaluada en {float(a)} y en {float(b)} tiene signos iguales.")
                 print(
-                    f"Es posible que no haya una raíz en el intervalo [{a}, {b}]. Intenta con otro intervalo.\n")
+                    f"Es posible que no haya una raíz en el intervalo [{float(a)}, {float(b)}]. Intenta con otro intervalo.\n")
 
         # Iteraciones máximas, tolerancia y sus checks
         max_it, toler = maxIt_toler_checks()
@@ -221,20 +222,27 @@ def trigger_metodo():
             "| {:-^3} | {:-^14} | {:-^14} | {:-^14} | {:-^14} | {:-^14} | {:-^14} |".format(*encabezado[1]))
 
         # Procesar e imprimir resultados
-        raiz, err_rel = biseccion_posFalsa(a, b, 0, max_it, toler)
-        if err_rel <= toler:
+        raiz, err_rel = biseccion_posFalsa(a, b, Float(0), max_it, toler)
+        if err_rel == 0:
             print(
-                f"\nSe encontró una raíz en el intervalo [{a}, {b}] con un error relativo menor o igual a {toler}:")
-            print(f"- La raíz encontrada fue {raiz}")
+                f"\nSe encontró una raíz en el intervalo [{float(a)}, {float(b)}]:")
+            print(f"- La raíz encontrada fue {float(raiz)}")
             print(
-                f"- Se necesitó de {it} iteraciones y la raíz tiene un error relativo de {err_rel}")
+                f"- Se necesitó de {it} iteraciones y esta raíz es exacta")
+            input("\nPresiona enter para continuar.")
+        elif err_rel <= toler:
+            print(
+                f"\nSe encontró una raíz en el intervalo [{float(a)}, {float(b)}] con un error relativo menor o igual a {float(toler)}:")
+            print(f"- La raíz encontrada fue {float(raiz)}")
+            print(
+                f"- Se necesitó de {it} iteraciones y la raíz tiene un error relativo de {float(err_rel)}")
             input("\nPresiona enter para continuar.")
         else:
             print(f"\nSe alcanzaron las {it} iteraciones máximas:")
             print(
-                f"- No se pudo encontrar una raíz en el intervalo [{a}, {b}] con un error relativo menor a {toler}")
+                f"- No se pudo encontrar una raíz en el intervalo [{float(a)}, {float(b)}] con un error relativo menor a {float(toler)}")
             print(
-                f"- El valor más preciso encontrado fue {raiz}, que tiene un error relativo de {err_rel}")
+                f"- El valor más preciso encontrado fue {float(raiz)}, que tiene un error relativo de {float(err_rel)}")
             print("Puede volver a intentar encontrar una raíz, esta vez con más iteraciones, otra tolerancia u otro intervalo.")
             input("\nPresiona enter para continuar.")
 
@@ -253,7 +261,7 @@ def trigger_metodo():
                 menu_funciones()
 
             try:
-                x0 = float(x0)
+                x0 = Float(x0)
             except:
                 print("\nIntroduzca un número real.\n")
                 continue
@@ -262,14 +270,14 @@ def trigger_metodo():
                 dx0 = deriv.evalf(subs={x: x0})
             except:
                 print(
-                    f"\nLa derivada no está definida en {x0}. Intenta con otro valor.\n")
+                    f"\nLa derivada no está definida en {float(x0)}. Intenta con otro valor.\n")
                 continue
 
             if dx0 != 0:
                 break
             else:
                 print(
-                    f"\nLa derivada evaluada en {x0} es igual a 0. Intenta con otro valor.\n")
+                    f"\nLa derivada evaluada en {float(x0)} es igual a 0. Intenta con otro valor.\n")
 
         # Iteraciones máximas, tolerancia y sus checks
         max_it, toler = maxIt_toler_checks()
@@ -289,17 +297,17 @@ def trigger_metodo():
         raiz, err_rel = newton(x0, max_it, toler)
         if err_rel <= toler:
             print(
-                f"\nSe encontró una raíz a partir del punto inicial {x0} con un error relativo menor o igual a {toler}:")
-            print(f"- La raíz encontrada fue {raiz}")
+                f"\nSe encontró una raíz a partir del punto inicial {float(x0)} con un error relativo menor o igual a {float(toler)}:")
+            print(f"- La raíz encontrada fue {float(raiz)}")
             print(
-                f"- Se necesitó de {it} iteraciones y la raíz tiene un error relativo de {err_rel}")
+                f"- Se necesitó de {it} iteraciones y la raíz tiene un error relativo de {float(err_rel)}")
             input("\nPresiona enter para continuar.")
         else:
             print(f"\nSe alcanzaron las {it} iteraciones máximas:")
             print(
-                f"- No se pudo encontrar una raíz a partir del punto inicial {x0} con un error relativo menor a {toler}")
+                f"- No se pudo encontrar una raíz a partir del punto inicial {float(x0)} con un error relativo menor a {float(toler)}")
             print(
-                f"- El valor más preciso encontrado fue {raiz}, que tiene un error relativo de {err_rel}")
+                f"- El valor más preciso encontrado fue {float(raiz)}, que tiene un error relativo de {float(err_rel)}")
             print("Puede volver a intentar encontrar una raíz, esta vez con más iteraciones, otra tolerancia u otro valor inicial.")
             input("\nPresiona enter para continuar.")
 
@@ -311,13 +319,13 @@ def trigger_metodo():
         while True:
             print("(introduzca una 'x' si desea regresar al menú de funciones)")
 
-            x0 = input("• Valor inicial (x_0): ")
+            x0 = input("• Valor de x_0: ")
             if (x0 == 'x') or (x0 == 'X'):
                 menu_funciones()
 
             try:
-                x0 = float(x0)
-                x1 = float(input("• Valor de x_1: "))
+                x0 = Float(x0)
+                x1 = Float(input("• Valor de x_1: "))
             except:
                 print("\nIntroduzca números reales.\n")
                 continue
@@ -327,7 +335,7 @@ def trigger_metodo():
                 fx1 = func.evalf(subs={x: x1})
             except:
                 print(
-                    f"\nLa función no está definida en {x0} o en {x1}. Intenta con otro intervalo.\n")
+                    f"\nLa función no está definida en {float(x0)} o en {float(x1)}. Intenta con otro intervalo.\n")
                 continue
 
             break
@@ -350,17 +358,17 @@ def trigger_metodo():
         raiz, err_rel = secante(x0, x1, max_it, toler)
         if err_rel <= toler:
             print(
-                f"\nSe encontró una raíz a partir de los puntos iniciales {x0} y {x1} con un error relativo menor o igual a {toler}:")
-            print(f"- La raíz encontrada fue {raiz}")
+                f"\nSe encontró una raíz a partir de los puntos iniciales {float(x0)} y {float(x1)} con un error relativo menor o igual a {float(toler)}:")
+            print(f"- La raíz encontrada fue {float(raiz)}")
             print(
-                f"- Se necesitó de {it} iteraciones y la raíz tiene un error relativo de {err_rel}")
+                f"- Se necesitó de {it} iteraciones y la raíz tiene un error relativo de {float(err_rel)}")
             input("\nPresiona enter para continuar.")
         else:
             print(f"\nSe alcanzaron las {it} iteraciones máximas:")
             print(
-                f"- No se pudo encontrar una raíz a partir de los puntos iniciales {x0} y {x1} con un error relativo menor a {toler}")
+                f"- No se pudo encontrar una raíz a partir de los puntos iniciales {float(x0)} y {float(x1)} con un error relativo menor a {float(toler)}")
             print(
-                f"- El valor más preciso encontrado fue {raiz}, que tiene un error relativo de {err_rel}")
+                f"- El valor más preciso encontrado fue {float(raiz)}, que tiene un error relativo de {float(err_rel)}")
             print("Puede volver a intentar encontrar una raíz, esta vez con más iteraciones, otra tolerancia u otro valor inicial.")
             input("\nPresiona enter para continuar.")
 
@@ -373,7 +381,7 @@ def biseccion_posFalsa(a, b, anterior, max_it, toler):
     fa = func.evalf(subs={x: a})
     fb = func.evalf(subs={x: b})
 
-    assert (fa * fb) < 0, "f(a) y f(b) deberían tener signos diferentes; en teoría nunca debería imprimirme."
+    assert (fa * fb) <= 0, "f(a) y f(b) deberían tener signos diferentes; en teoría nunca debería imprimirme."
 
     # Calcular el punto medio, según el método seleccionado
     # Bisección
@@ -384,22 +392,49 @@ def biseccion_posFalsa(a, b, anterior, max_it, toler):
         p = b - (fb * (a - b)/(fa - fb))
 
     fp = func.evalf(subs={x: p})
-    err_rel = abs(p - anterior)/abs(p)
+
+    # Si p = 0, el error relativo no se puede calcular
+    # pero aún así podemos continuar, con algunas consideraciones
+    # sympy nos da zoo (infinidad compleja, x/0) o nan (0/0) cuando se divide entre 0
+    err_rel = Abs(p - anterior)/Abs(p)
 
     # Imprimir la tabla de los cálculos
-    fila = [it+1, float(a), float(b), float(fa), float(fb),
-            float(p), float(err_rel)]
-    print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
+    # Para primera iteración o si el err_rel no existe, imprimir N/A
+    if (it == 0) or (err_rel is zoo) or (err_rel is nan):
+        fila = [it+1, float(a), float(b), float(fa), float(fb),
+                float(p), " N/A"]
+        print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
+    else:
+        fila = [it+1, float(a), float(b), float(fa), float(fb),
+                float(p), float(err_rel)]
+        print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
 
     it += 1
-    # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
-    if (it == max_it) or (err_rel < toler):
-        return p, err_rel
-    # De otra forma, continuar, cambiando el intervalo según se necesite
-    elif (fa * fp) < 0:
-        return biseccion_posFalsa(a, p, p, max_it, toler)
+
+    # Determinar si continuar con el método o terminar
+    # Se toma en cuenta si err_rel existe
+    if (err_rel is not zoo) and (err_rel is not nan):
+        # Si f(p) = 0, ya encontramos la raíz
+        if fp == 0:
+            return p, 0
+        else:
+            # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
+            if (it == max_it) or (err_rel < toler):
+                return p, err_rel
+            # De otra forma, continuar, cambiando el intervalo según se necesite
+            elif (fa * fp) < 0:
+                return biseccion_posFalsa(a, p, p, max_it, toler)
+            else:
+                return biseccion_posFalsa(p, b, p, max_it, toler)
+    # Si no se pudo determinar err_rel anteriormente, siempre continuar
     else:
-        return biseccion_posFalsa(p, b, p, max_it, toler)
+        if fp == 0:
+            return p, 0
+        else:
+            if (fa * fp) < 0:
+                return biseccion_posFalsa(a, p, p, max_it, toler)
+            else:
+                return biseccion_posFalsa(p, b, p, max_it, toler)
 
 def newton(xk, max_it, toler):
     global it
@@ -407,26 +442,43 @@ def newton(xk, max_it, toler):
     fxk = func.evalf(subs={x: xk})
     dxk = deriv.evalf(subs={x: xk})
 
-    # Cálculo del siguiente valor y del error
+    # Cálculo del siguiente valor
+    # Si dxk = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
     xkp1 = xk - (fxk/dxk)
-
-    if (fxk == 0) or (dxk == 0) or (xkp1 == 0):
+    if (xkp1 is zoo) or (xkp1 is nan):
         print("\n| {105} |".format(
             "Valor inicial desafortunado (división entre 0). Intenta con otro."))
         input("\nPresiona enter para continuar.")
         trigger_metodo()
 
-    err_rel = abs(xkp1 - xk)/abs(xkp1)
+    # Si xkp1 = 0, el error relativo no se puede calcular
+    # pero aún así podemos continuar, con algunas consideraciones
+    # sympy nos da zoo (infinidad compleja, x/0) o nan (0/0) cuando se divide entre 0
+    err_rel = Abs(xkp1 - xk)/Abs(xkp1)
 
     # Imprimir la tabla de los cálculos
-    fila = [it+1, float(xk), float(fxk), float(dxk), float(err_rel)]
-    print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
+    # Si el err_rel no existe, imprimir N/A
+    if (err_rel is zoo) or (err_rel is nan):
+        fila = [it+1, float(xk), float(fxk), float(dxk), " N/A"]
+        print(
+            "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
+    else:
+        fila = [it+1, float(xk), float(fxk), float(dxk), float(err_rel)]
+        print(
+            "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
 
     it += 1
-    # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
-    if (it == max_it) or (err_rel < toler):
-        return xkp1, err_rel
-    # De otra forma, continuar, ahora utilizando el valor recién calculado
+
+    # Determinar si continuar con el método o terminar
+    # Se toma en cuenta si err_rel existe
+    if (err_rel is not zoo) and (err_rel is not nan):
+        # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
+        if (it == max_it) or (err_rel < toler):
+            return xkp1, err_rel
+        # De otra forma, continuar, ahora utilizando el valor recién calculado
+        else:
+            return newton(xkp1, max_it, toler)
+    # Si no se pudo determinar err_rel anteriormente, siempre continuar
     else:
         return newton(xkp1, max_it, toler)
 
@@ -436,20 +488,43 @@ def secante(xkm1, xk, max_it, toler):
     fxkm1 = func.evalf(subs={x: xkm1})
     fxk = func.evalf(subs={x: xk})
 
-    # Cálculo del siguiente valor y del error
+    # Cálculo del siguiente valor
+    # Si (fxm1 - fxk) = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
     xkp1 = xk - (fxk)*((xkm1 - xk)/(fxkm1 - fxk))
-    err_rel = (abs(xkp1 - xk)/abs(xkp1))
+    if (xkp1 is zoo) or (xkp1 is nan):
+        print("\n| {105} |".format(
+            "Valor inicial desafortunado (división entre 0). Intenta con otro."))
+        input("\nPresiona enter para continuar.")
+        trigger_metodo()
+
+    # Si xkp1 = 0, el error relativo no se puede calcular
+    # pero aún así podemos continuar, con algunas consideraciones
+    # sympy nos da zoo (infinidad compleja, x/0) o nan (0/0) cuando se divide entre 0
+    err_rel = Abs(xkp1 - xk)/Abs(xkp1)
 
     # Imprimir la tabla de los cálculos
-    fila = [it+1, float(xkm1), float(xk), float(fxkm1),
-            float(fxk), float(xkp1), float(err_rel)]
-    print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
+    # Si el err_rel no existe, imprimir N/A
+    if (err_rel is zoo) or (err_rel is nan):
+        fila = [it+1, float(xkm1), float(xk), float(fxkm1),
+                float(fxk), float(xkp1), " N/A"]
+        print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
+    else:
+        fila = [it+1, float(xkm1), float(xk), float(fxkm1),
+                float(fxk), float(xkp1), float(err_rel)]
+        print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
 
     it += 1
+
     # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
-    if (it == max_it) or (err_rel < toler):
-        return xkp1, err_rel
-    # De otra forma, continuar, ahora utilizando el valor recién calculado
+    # Determinar si continuar con el método o terminar
+    # Se toma en cuenta si err_rel existe
+    if (err_rel is not zoo) and (err_rel is not nan):
+        if (it == max_it) or (err_rel < toler):
+            return xkp1, err_rel
+        # De otra forma, continuar, ahora utilizando el valor recién calculado
+        else:
+            return secante(xk, xkp1, max_it, toler)
+    # Si no se pudo determinar err_rel anteriormente, siempre continuar
     else:
         return secante(xk, xkp1, max_it, toler)
 
