@@ -59,8 +59,8 @@ def menu_funciones():
         4: "x**3 + 6*(x**2) + 9.4*x + 2.5",
 
         # Funciones de los ejercicios del portafolio
-        #5: "((50 + (37.49/x**2)) * (x - 0.197)) - (0.08205*348.15)",
-        #6: "x * ((15*x)/(15+2*x))**(2/3) - ((0.015*20)/(15*sqrt(0.001)))",
+        5: "((50 + (37.49/x**2)) * (x - 0.197)) - (0.08205*348.15)",
+        6: "x * ((15*x)/(15+2*x))**(2/3) - ((0.015*20)/(15*sqrt(0.001)))",
         7: "(((2+0.4*x**2)/2.4)**3.5 - 1)/(0.7*x**2*(-0.383)) - (sqrt(1-x**2)+(((x**2*(-0.383))/2)/(1+sqrt(1-x**2))))**(-1)",
 
         0: "Regresar al menú de métodos"
@@ -82,14 +82,14 @@ def menu_funciones():
         try:
             eleccion_funcion = int(input("¿Qué función desea utilizar? "))
         except:
-            print("\nIntroduzca un número entero.")
+            print("\nIntroduzca un número entero.\n")
             continue
 
-        if (eleccion_funcion >= 0) and (eleccion_metodo <= len(opciones_funciones.keys())):
+        if (eleccion_funcion >= 0) and (eleccion_funcion <= len(opciones_funciones.keys())):
             break
         else:
             print(
-                f"\nIntroduzca un número entre 0 y {len(opciones_funciones.keys())-1}")
+                f"\nIntroduzca un número entre 0 y {len(opciones_funciones.keys())-1}\n")
 
     if eleccion_funcion != 0:
         func = sympify(opciones_funciones[eleccion_funcion])
@@ -134,7 +134,13 @@ def trigger_metodo():
                     f"\nLa función no está definida en {a} o en {b}. Intenta con otro intervalo.\n")
                 continue
 
-            if (fa * fb) < 0:
+            try:
+                menor_cero = (fa * fb) < 0 
+            except:
+                print(f"\nLa función evaluada en {a} o en {b} da como resultado un número complejo. Intenta con otro intervalo.\n")
+                continue
+
+            if menor_cero:
                 break
             else:
                 print(
