@@ -1,4 +1,4 @@
-from sympy import Abs, diff, Float, nan, printing, sympify, symbols, zoo, Pow, Rational, real_root, E
+from sympy import Abs, diff, E, Float, nan, printing, Pow, real_root, Rational, sympify, symbols, zoo
 
 # x es la variable
 # e se utiliza para evaluar cuando se tiene el núm. de Euler
@@ -160,9 +160,7 @@ def maxIt_toler_checks():
 
 # Según las elecciones del usuario en el menú, utilizar el método deseado
 def trigger_metodo():
-    global it, deriv
-    it = 0
-
+    global deriv
     clear_screen()
 
     # Bisección y posición falsa
@@ -231,7 +229,8 @@ def trigger_metodo():
             "| {:-^3} | {:-^14} | {:-^14} | {:-^14} | {:-^14} | {:-^14} | {:-^14} |".format(*encabezado[1]))
 
         # Procesar e imprimir resultados
-        raiz, err_rel = biseccion_posFalsa(a, b, Float(0), max_it, toler)
+        raiz, err_rel, it = biseccion_posFalsa(a, b, max_it, toler)
+
         if err_rel == 0:
             print(
                 f"\nSe encontró una raíz en el intervalo [{float(a)}, {float(b)}]:")
@@ -303,7 +302,8 @@ def trigger_metodo():
             "| {:-^3} | {:-^14} | {:-^14} | {:-^14} | {:-^14} |".format(*encabezado[1]))
 
         # Procesar e imprimir resultados
-        raiz, err_rel = newton(x0, max_it, toler)
+        raiz, err_rel, it = newton(x0, max_it, toler)
+
         if err_rel <= toler:
             print(
                 f"\nSe encontró una raíz a partir del punto inicial {float(x0)} con un error relativo menor o igual a {float(toler)}:")
@@ -364,7 +364,8 @@ def trigger_metodo():
             "| {:-^3} | {:-^14} | {:-^14} | {:-^14} | {:-^14} | {:-^14} | {:-^14} |".format(*encabezado[1]))
 
         # Procesar e imprimir resultados
-        raiz, err_rel = secante(x0, x1, max_it, toler)
+        raiz, err_rel, it = secante(x0, x1, max_it, toler)
+
         if err_rel <= toler:
             print(
                 f"\nSe encontró una raíz a partir de los puntos iniciales {float(x0)} y {float(x1)} con un error relativo menor o igual a {float(toler)}:")
@@ -384,158 +385,165 @@ def trigger_metodo():
     fin_metodo()
 
 # Función para el método de bisección *y* el de la posición falsa
-def biseccion_posFalsa(a, b, anterior, max_it, toler):
-    global it
+def biseccion_posFalsa(a, b, max_it, toler):
+    for it in range(max_it):
+        fa = func.evalf(subs={x: a, e: E})
+        fb = func.evalf(subs={x: b, e: E})
+        assert (fa * fb) <= 0, "f(a) y f(b) deberían tener signos diferentes; en teoría nunca debería imprimirme."
 
-    fa = func.evalf(subs={x: a, e: E})
-    fb = func.evalf(subs={x: b, e: E})
+        # Calcular el punto medio, según el método seleccionado
+        # Bisección
+        if eleccion_metodo == 1:
+            p = (a + b)/2
+        # Falsa posición
+        elif eleccion_metodo == 2:
+            p = b - (fb * (a - b)/(fa - fb))
 
-    assert (fa * fb) <= 0, "f(a) y f(b) deberían tener signos diferentes; en teoría nunca debería imprimirme."
+        fp = func.evalf(subs={x: p, e: E})
 
-    # Calcular el punto medio, según el método seleccionado
-    # Bisección
-    if eleccion_metodo == 1:
-        p = (a + b)/2
-    # Falsa posición
-    elif eleccion_metodo == 2:
-        p = b - (fb * (a - b)/(fa - fb))
-
-    fp = func.evalf(subs={x: p, e: E})
-
-    # Si p = 0, el error relativo no se puede calcular
-    # pero aún así podemos continuar, con algunas consideraciones
-    # sympy nos da zoo (infinidad compleja, x/0) o nan (0/0) cuando se divide entre 0
-    err_rel = Abs(p - anterior)/Abs(p)
-
-    # Imprimir la tabla de los cálculos
-    # Para primera iteración o si el err_rel no existe, imprimir N/A
-    if (it == 0) or (err_rel is zoo) or (err_rel is nan):
-        fila = [it+1, float(a), float(b), float(fa), float(fb),
-                float(p), " N/A"]
-        print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
-    else:
-        fila = [it+1, float(a), float(b), float(fa), float(fb),
-                float(p), float(err_rel)]
-        print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
-
-    it += 1
-
-    # Determinar si continuar con el método o terminar
-    # Se toma en cuenta si err_rel existe
-    if (err_rel is not zoo) and (err_rel is not nan):
-        # Si f(p) = 0, ya encontramos la raíz
-        if fp == 0:
-            return p, 0
+        # Si p = 0, el error relativo no se puede calcular
+        # pero aún así podemos continuar, con algunas consideraciones
+        # sympy nos da zoo (infinidad compleja, x/0) o nan (0/0) cuando se divide entre 0
+        if it != 0:
+            err_rel = Abs(p - anterior)/Abs(p)
         else:
-            # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
-            if (it == max_it) or (err_rel < toler):
-                return p, err_rel
-            # De otra forma, continuar, cambiando el intervalo según se necesite
-            elif (fa * fp) < 0:
-                return biseccion_posFalsa(a, p, p, max_it, toler)
-            else:
-                return biseccion_posFalsa(p, b, p, max_it, toler)
-    # Si no se pudo determinar err_rel anteriormente, siempre continuar
-    else:
-        if fp == 0:
-            return p, 0
+            err_rel = nan
+
+        # Imprimir la tabla de los cálculos
+        # Para primera iteración o si el err_rel no existe, imprimir N/A
+        if (it == 0) or (err_rel is zoo) or (err_rel is nan):
+            fila = [it+1, float(a), float(b), float(fa), float(fb),
+                    float(p), " N/A"]
+            print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
         else:
-            if (fa * fp) < 0:
-                return biseccion_posFalsa(a, p, p, max_it, toler)
+            fila = [it+1, float(a), float(b), float(fa), float(fb),
+                    float(p), float(err_rel)]
+            print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
+
+        it += 1
+
+        # Determinar si continuar con el método o terminar
+        # Se toma en cuenta si err_rel existe
+        if (err_rel is not zoo) and (err_rel is not nan):
+            # Si f(p) = 0, ya encontramos la raíz
+            if fp == 0:
+                return p, 0, it
             else:
-                return biseccion_posFalsa(p, b, p, max_it, toler)
+                # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
+                if (it == max_it) or (err_rel < toler):
+                    return p, err_rel, it
+                # De otra forma, continuar, cambiando el intervalo según se necesite
+                elif (fa * fp) < 0:
+                    b = p
+                    anterior = p
+                else:
+                    a = p
+                    anterior = p
+        # Si no se pudo determinar err_rel anteriormente, siempre continuar
+        else:
+            if fp == 0:
+                return p, 0
+            else:
+                if (fa * fp) < 0:
+                    b = p
+                    anterior = p
+                else:
+                    a = p
+                    anterior = p
 
 def newton(xk, max_it, toler):
-    global it
-    # Evaluación de la función y devirada en x_k
-    fxk = func.evalf(subs={x: xk, e: E})
-    dxk = deriv.evalf(subs={x: xk, e: E})
+    for it in range(max_it):
+        # Evaluación de la función y devirada en x_k
+        fxk = func.evalf(subs={x: xk, e: E})
+        dxk = deriv.evalf(subs={x: xk, e: E})
 
-    # Cálculo del siguiente valor
-    # Si dxk = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
-    xkp1 = xk - (fxk/dxk)
-    if (xkp1 is zoo) or (xkp1 is nan):
-        print("\n| {105} |".format(
-            "Valor inicial desafortunado (división entre 0). Intenta con otro."))
-        input("\nPresiona enter para continuar.")
-        trigger_metodo()
+        # Cálculo del siguiente valor
+        # Si dxk = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
+        xkp1 = xk - (fxk/dxk)
+        if (xkp1 is zoo) or (xkp1 is nan):
+            print("\n| {105} |".format(
+                "Valor inicial desafortunado (división entre 0). Intenta con otro."))
+            input("\nPresiona enter para continuar.")
+            trigger_metodo()
 
-    # Si xkp1 = 0, el error relativo no se puede calcular
-    # pero aún así podemos continuar, con algunas consideraciones
-    # sympy nos da zoo (infinidad compleja, x/0) o nan (0/0) cuando se divide entre 0
-    err_rel = Abs(xkp1 - xk)/Abs(xkp1)
+        # Si xkp1 = 0, el error relativo no se puede calcular
+        # pero aún así podemos continuar, con algunas consideraciones
+        # sympy nos da zoo (infinidad compleja, x/0) o nan (0/0) cuando se divide entre 0
+        err_rel = Abs(xkp1 - xk)/Abs(xkp1)
 
-    # Imprimir la tabla de los cálculos
-    # Si el err_rel no existe, imprimir N/A
-    if (err_rel is zoo) or (err_rel is nan):
-        fila = [it+1, float(xk), float(fxk), float(dxk), " N/A"]
-        print(
-            "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
-    else:
-        fila = [it+1, float(xk), float(fxk), float(dxk), float(err_rel)]
-        print(
-            "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
-
-    it += 1
-
-    # Determinar si continuar con el método o terminar
-    # Se toma en cuenta si err_rel existe
-    if (err_rel is not zoo) and (err_rel is not nan):
-        # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
-        if (it == max_it) or (err_rel < toler):
-            return xkp1, err_rel
-        # De otra forma, continuar, ahora utilizando el valor recién calculado
+        # Imprimir la tabla de los cálculos
+        # Si el err_rel no existe, imprimir N/A
+        if (err_rel is zoo) or (err_rel is nan):
+            fila = [it+1, float(xk), float(fxk), float(dxk), " N/A"]
+            print(
+                "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
         else:
-            return newton(xkp1, max_it, toler)
-    # Si no se pudo determinar err_rel anteriormente, siempre continuar
-    else:
-        return newton(xkp1, max_it, toler)
+            fila = [it+1, float(xk), float(fxk), float(dxk), float(err_rel)]
+            print(
+                "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
+
+        it += 1
+
+        # Determinar si continuar con el método o terminar
+        # Se toma en cuenta si err_rel existe
+        if (err_rel is not zoo) and (err_rel is not nan):
+            # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
+            if (it == max_it) or (err_rel < toler):
+                return xkp1, err_rel, it
+            # De otra forma, continuar, ahora utilizando el valor recién calculado
+            else:
+                xk = xkp1
+        # Si no se pudo determinar err_rel anteriormente, siempre continuar
+        else:
+            xk = xkp1
 
 def secante(xkm1, xk, max_it, toler):
-    global it
-    # Evaluación de la función en x_k y x_k-1
-    fxkm1 = func.evalf(subs={x: xkm1, e: E})
-    fxk = func.evalf(subs={x: xk, e: E})
+    for it in range(max_it):
+        # Evaluación de la función en x_k y x_k-1
+        fxkm1 = func.evalf(subs={x: xkm1, e: E})
+        fxk = func.evalf(subs={x: xk, e: E})
 
-    # Cálculo del siguiente valor
-    # Si (fxm1 - fxk) = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
-    xkp1 = xk - (fxk)*((xkm1 - xk)/(fxkm1 - fxk))
-    if (xkp1 is zoo) or (xkp1 is nan):
-        print("\n| {105} |".format(
-            "Valor inicial desafortunado (división entre 0). Intenta con otro."))
-        input("\nPresiona enter para continuar.")
-        trigger_metodo()
+        # Cálculo del siguiente valor
+        # Si (fxm1 - fxk) = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
+        xkp1 = xk - (fxk)*((xkm1 - xk)/(fxkm1 - fxk))
+        if (xkp1 is zoo) or (xkp1 is nan):
+            print("\n| {105} |".format(
+                "Valor inicial desafortunado (división entre 0). Intenta con otro."))
+            input("\nPresiona enter para continuar.")
+            trigger_metodo()
 
-    # Si xkp1 = 0, el error relativo no se puede calcular
-    # pero aún así podemos continuar, con algunas consideraciones
-    # sympy nos da zoo (infinidad compleja, x/0) o nan (0/0) cuando se divide entre 0
-    err_rel = Abs(xkp1 - xk)/Abs(xkp1)
+        # Si xkp1 = 0, el error relativo no se puede calcular
+        # pero aún así podemos continuar, con algunas consideraciones
+        # sympy nos da zoo (infinidad compleja, x/0) o nan (0/0) cuando se divide entre 0
+        err_rel = Abs(xkp1 - xk)/Abs(xkp1)
 
-    # Imprimir la tabla de los cálculos
-    # Si el err_rel no existe, imprimir N/A
-    if (err_rel is zoo) or (err_rel is nan):
-        fila = [it+1, float(xkm1), float(xk), float(fxkm1),
-                float(fxk), float(xkp1), " N/A"]
-        print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
-    else:
-        fila = [it+1, float(xkm1), float(xk), float(fxkm1),
-                float(fxk), float(xkp1), float(err_rel)]
-        print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
-
-    it += 1
-
-    # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
-    # Determinar si continuar con el método o terminar
-    # Se toma en cuenta si err_rel existe
-    if (err_rel is not zoo) and (err_rel is not nan):
-        if (it == max_it) or (err_rel < toler):
-            return xkp1, err_rel
-        # De otra forma, continuar, ahora utilizando el valor recién calculado
+        # Imprimir la tabla de los cálculos
+        # Si el err_rel no existe, imprimir N/A
+        if (err_rel is zoo) or (err_rel is nan):
+            fila = [it+1, float(xkm1), float(xk), float(fxkm1),
+                    float(fxk), float(xkp1), " N/A"]
+            print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
         else:
-            return secante(xk, xkp1, max_it, toler)
-    # Si no se pudo determinar err_rel anteriormente, siempre continuar
-    else:
-        return secante(xk, xkp1, max_it, toler)
+            fila = [it+1, float(xkm1), float(xk), float(fxkm1),
+                    float(fxk), float(xkp1), float(err_rel)]
+            print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
+
+        it += 1
+
+        # Si se ha llegado a la iteración máxima o el error ya es menor al deseado, terminar
+        # Determinar si continuar con el método o terminar
+        # Se toma en cuenta si err_rel existe
+        if (err_rel is not zoo) and (err_rel is not nan):
+            if (it == max_it) or (err_rel < toler):
+                return xkp1, err_rel, it
+            # De otra forma, continuar, ahora utilizando el valor recién calculado
+            else:
+                xkm1 = xk
+                xk = xkp1
+        # Si no se pudo determinar err_rel anteriormente, siempre continuar
+        else:
+            xkm1 = xk
+            xk = xkp1
 
 def fin_metodo():
     clear_screen()
@@ -544,8 +552,13 @@ def fin_metodo():
     print("2 --- Regresar al menú de funciones")
     print("3 --- Regresar al menú de métodos")
 
-    resp = int(input("\n¿Qué desea hacer a continuación? "))
     while True:
+        try:
+            resp = int(input("\n¿Qué desea hacer a continuación? "))
+        except:
+            print("\nIntroduzca un número entero.")
+            continue
+
         if resp == 1:
             trigger_metodo()
             break
