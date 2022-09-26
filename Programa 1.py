@@ -1,6 +1,8 @@
-from sympy import Abs, diff, Float, nan, printing, sympify, Symbol, zoo
+from sympy import Abs, diff, Float, nan, printing, sympify, symbols, zoo, Pow, Rational, real_root, E
 
-x = Symbol('x')
+# x es la variable
+# e se utiliza para evaluar cuando se tiene el núm. de Euler
+x, e = symbols('x, e')
 
 #########
 # Otros #
@@ -76,7 +78,7 @@ def menu_funciones():
     global func, eleccion_funcion
     opciones_funciones = {
         1: "x**2 * cos(x) - 2*x",
-        2: "(((6-2)/x**2) * E**(x+2)) / (4+1)",
+        2: "(6 - (2/x**2)) * (e**(2+x)/4) + 1",
         3: "x**3 - 3*sin(x**2) + 1",
         4: "x**3 + 6*(x**2) + 9.4*x + 2.5",
 
@@ -93,7 +95,8 @@ def menu_funciones():
     print("--------------------------------\n")
     for opcion in opciones_funciones.keys():
         if opcion != 0:
-            pretty_func = printing.pretty(sympify(opciones_funciones[opcion]))
+            pretty_func = printing.pretty(
+                sympify(opciones_funciones[opcion]), use_unicode=False)
             print(f"• Función {opcion}:\n")
             print(f"{pretty_func}\n")
             print("--------------------------------\n")
@@ -114,7 +117,10 @@ def menu_funciones():
                 f"\nIntroduzca un número entre 0 y {len(opciones_funciones.keys())-1}\n")
 
     if eleccion_funcion != 0:
-        func = sympify(opciones_funciones[eleccion_funcion])
+        # func es la función elegida por el usuario
+        # el .replace() es para evaluar obtener las ráices reales de toda raíz que se calcule
+        func = sympify(opciones_funciones[eleccion_funcion]).replace(lambda expr: isinstance(
+            expr, Pow) and isinstance(expr.exp, Rational), lambda expr: real_root(expr.base, expr.exp.q)**expr.exp.p)
         trigger_metodo()
     else:
         menu_metodos()
@@ -185,21 +191,24 @@ def trigger_metodo():
                 continue
 
             try:
-                fa = func.evalf(subs={x: a})
-                fb = func.evalf(subs={x: b})
+                fa = func.evalf(subs={x: a, e: E})
+                fb = func.evalf(subs={x: b, e: E})
             except:
                 print(
                     f"\nLa función no está definida en {float(a)} o en {float(b)}. Intenta con otro intervalo.\n")
                 continue
 
             try:
-                menor_cero = (fa * fb) < 0
+                fa = Float(fa)
+                fb = Float(fb)
             except:
                 print(
                     f"\nLa función evaluada en {float(a)} o en {float(b)} da como resultado un número complejo. Intenta con otro intervalo.\n")
-                continue
+                # continue
 
-            if menor_cero:
+            fb = Float(fb)
+
+            if fa*fb < 0:
                 break
             else:
                 print(
@@ -267,7 +276,7 @@ def trigger_metodo():
                 continue
 
             try:
-                dx0 = deriv.evalf(subs={x: x0})
+                dx0 = deriv.evalf(subs={x: x0, e: E})
             except:
                 print(
                     f"\nLa derivada no está definida en {float(x0)}. Intenta con otro valor.\n")
@@ -331,8 +340,8 @@ def trigger_metodo():
                 continue
 
             try:
-                fx0 = func.evalf(subs={x: x0})
-                fx1 = func.evalf(subs={x: x1})
+                fx0 = func.evalf(subs={x: x0, e: E})
+                fx1 = func.evalf(subs={x: x1, e: E})
             except:
                 print(
                     f"\nLa función no está definida en {float(x0)} o en {float(x1)}. Intenta con otro intervalo.\n")
@@ -378,8 +387,8 @@ def trigger_metodo():
 def biseccion_posFalsa(a, b, anterior, max_it, toler):
     global it
 
-    fa = func.evalf(subs={x: a})
-    fb = func.evalf(subs={x: b})
+    fa = func.evalf(subs={x: a, e: E})
+    fb = func.evalf(subs={x: b, e: E})
 
     assert (fa * fb) <= 0, "f(a) y f(b) deberían tener signos diferentes; en teoría nunca debería imprimirme."
 
@@ -391,7 +400,7 @@ def biseccion_posFalsa(a, b, anterior, max_it, toler):
     elif eleccion_metodo == 2:
         p = b - (fb * (a - b)/(fa - fb))
 
-    fp = func.evalf(subs={x: p})
+    fp = func.evalf(subs={x: p, e: E})
 
     # Si p = 0, el error relativo no se puede calcular
     # pero aún así podemos continuar, con algunas consideraciones
@@ -439,8 +448,8 @@ def biseccion_posFalsa(a, b, anterior, max_it, toler):
 def newton(xk, max_it, toler):
     global it
     # Evaluación de la función y devirada en x_k
-    fxk = func.evalf(subs={x: xk})
-    dxk = deriv.evalf(subs={x: xk})
+    fxk = func.evalf(subs={x: xk, e: E})
+    dxk = deriv.evalf(subs={x: xk, e: E})
 
     # Cálculo del siguiente valor
     # Si dxk = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
@@ -485,8 +494,8 @@ def newton(xk, max_it, toler):
 def secante(xkm1, xk, max_it, toler):
     global it
     # Evaluación de la función en x_k y x_k-1
-    fxkm1 = func.evalf(subs={x: xkm1})
-    fxk = func.evalf(subs={x: xk})
+    fxkm1 = func.evalf(subs={x: xkm1, e: E})
+    fxk = func.evalf(subs={x: xk, e: E})
 
     # Cálculo del siguiente valor
     # Si (fxm1 - fxk) = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
