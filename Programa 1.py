@@ -1,8 +1,7 @@
-from sympy import Abs, diff, E, Float, nan, printing, Pow, real_root, Rational, sympify, symbols, zoo
+from sympy import Abs, diff, Float, nan, printing, Pow, real_root, Rational, sympify, Symbol, zoo
 
 # x es la variable
-# e se utiliza para evaluar cuando se tiene el núm. de Euler
-x, e = symbols('x, e')
+x = Symbol('x')
 
 #########
 # Otros #
@@ -65,7 +64,7 @@ def menu_metodos():
             print("\nIntroduzca un número entero.")
             continue
 
-        if (eleccion_metodo >= 0) and (eleccion_metodo <= len(opciones_metodos.keys())):
+        if (eleccion_metodo >= 0) and (eleccion_metodo < len(opciones_metodos.keys())):
             break
         else:
             print(
@@ -78,7 +77,7 @@ def menu_funciones():
     global func, eleccion_funcion
     opciones_funciones = {
         1: "x**2 * cos(x) - 2*x",
-        2: "(6 - (2/x**2)) * (e**(2+x)/4) + 1",
+        2: "(6 - (2/x**2)) * (E**(2+x)/4) + 1",
         3: "x**3 - 3*sin(x**2) + 1",
         4: "x**3 + 6*(x**2) + 9.4*x + 2.5",
 
@@ -110,7 +109,7 @@ def menu_funciones():
             print("\nIntroduzca un número entero.\n")
             continue
 
-        if (eleccion_funcion >= 0) and (eleccion_funcion <= len(opciones_funciones.keys())):
+        if (eleccion_funcion >= 0) and (eleccion_funcion < len(opciones_funciones.keys())):
             break
         else:
             print(
@@ -146,7 +145,7 @@ def maxIt_toler_checks():
     # Tolerancia y sus checks
     while True:
         try:
-            toler = Float(input("• Tolerancia (error relativo): "))
+            toler = Float(input("• Tolerancia (error relativo): "), 20)
         except:
             print("\nIntroduzca un número real.\n")
             continue
@@ -182,29 +181,29 @@ def trigger_metodo():
 
             try:
 
-                a = Float(a)
-                b = Float(input("• Valor de b (extremo derecho): "))
+                a = Float(a, 20)
+                b = Float(input("• Valor de b (extremo derecho): "), 20)
             except:
                 print("\nIntroduzca números reales.\n")
                 continue
 
             try:
-                fa = func.evalf(subs={x: a, e: E})
-                fb = func.evalf(subs={x: b, e: E})
+                fa = func.evalf(subs={x: a})
+                fb = func.evalf(subs={x: b})
             except:
                 print(
                     f"\nLa función no está definida en {float(a)} o en {float(b)}. Intenta con otro intervalo.\n")
                 continue
 
             try:
-                fa = Float(fa)
-                fb = Float(fb)
+                fa = Float(fa, 20)
+                fb = Float(fb, 20)
             except:
                 print(
                     f"\nLa función evaluada en {float(a)} o en {float(b)} da como resultado un número complejo. Intenta con otro intervalo.\n")
                 # continue
 
-            fb = Float(fb)
+            fb = Float(fb, 20)
 
             if fa*fb < 0:
                 break
@@ -269,13 +268,13 @@ def trigger_metodo():
                 menu_funciones()
 
             try:
-                x0 = Float(x0)
+                x0 = Float(x0, 20)
             except:
                 print("\nIntroduzca un número real.\n")
                 continue
 
             try:
-                dx0 = deriv.evalf(subs={x: x0, e: E})
+                dx0 = deriv.evalf(subs={x: x0}).round(20)
             except:
                 print(
                     f"\nLa derivada no está definida en {float(x0)}. Intenta con otro valor.\n")
@@ -333,15 +332,15 @@ def trigger_metodo():
                 menu_funciones()
 
             try:
-                x0 = Float(x0)
-                x1 = Float(input("• Valor de x_1: "))
+                x0 = Float(x0, 20)
+                x1 = Float(input("• Valor de x_1: "), 20)
             except:
                 print("\nIntroduzca números reales.\n")
                 continue
 
             try:
-                fx0 = func.evalf(subs={x: x0, e: E})
-                fx1 = func.evalf(subs={x: x1, e: E})
+                fx0 = func.evalf(subs={x: x0})
+                fx1 = func.evalf(subs={x: x1})
             except:
                 print(
                     f"\nLa función no está definida en {float(x0)} o en {float(x1)}. Intenta con otro intervalo.\n")
@@ -387,8 +386,8 @@ def trigger_metodo():
 # Función para el método de bisección *y* el de la posición falsa
 def biseccion_posFalsa(a, b, max_it, toler):
     for it in range(max_it):
-        fa = func.evalf(subs={x: a, e: E})
-        fb = func.evalf(subs={x: b, e: E})
+        fa = func.evalf(subs={x: a}).round(20)
+        fb = func.evalf(subs={x: b}).round(20)
         assert (fa * fb) <= 0, "f(a) y f(b) deberían tener signos diferentes; en teoría nunca debería imprimirme."
 
         # Calcular el punto medio, según el método seleccionado
@@ -399,7 +398,7 @@ def biseccion_posFalsa(a, b, max_it, toler):
         elif eleccion_metodo == 2:
             p = b - (fb * (a - b)/(fa - fb))
 
-        fp = func.evalf(subs={x: p, e: E})
+        fp = func.evalf(subs={x: p})
 
         # Si p = 0, el error relativo no se puede calcular
         # pero aún así podemos continuar, con algunas consideraciones
@@ -442,7 +441,7 @@ def biseccion_posFalsa(a, b, max_it, toler):
         # Si no se pudo determinar err_rel anteriormente, siempre continuar
         else:
             if fp == 0:
-                return p, 0
+                return p, 0, it
             else:
                 if (fa * fp) < 0:
                     b = p
@@ -454,15 +453,24 @@ def biseccion_posFalsa(a, b, max_it, toler):
 def newton(xk, max_it, toler):
     for it in range(max_it):
         # Evaluación de la función y devirada en x_k
-        fxk = func.evalf(subs={x: xk, e: E})
-        dxk = deriv.evalf(subs={x: xk, e: E})
+        fxk = func.evalf(subs={x: xk}).round(20)
+        dxk = deriv.evalf(subs={x: xk})
+        if (dxk is not zoo) and (dxk is not nan):
+            # Poco elegante pero funciona
+            # un dxk.round(20) falla cuando el número abs es muy pequeño
+            dxk = Float(round(eval(f'{dxk}'), 20))
+        else:
+            print("\n| {:^71} |".format(
+                "Valor inicial desafortunado. Intenta con otro."))
+            input("\nPresiona enter para continuar.")
+            trigger_metodo()
 
         # Cálculo del siguiente valor
         # Si dxk = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
         xkp1 = xk - (fxk/dxk)
         if (xkp1 is zoo) or (xkp1 is nan):
-            print("\n| {105} |".format(
-                "Valor inicial desafortunado (división entre 0). Intenta con otro."))
+            print("\n| {:^71} |".format(
+                "Valor inicial desafortunado (la derivada es 0). Intenta con otro."))
             input("\nPresiona enter para continuar.")
             trigger_metodo()
 
@@ -500,14 +508,14 @@ def newton(xk, max_it, toler):
 def secante(xkm1, xk, max_it, toler):
     for it in range(max_it):
         # Evaluación de la función en x_k y x_k-1
-        fxkm1 = func.evalf(subs={x: xkm1, e: E})
-        fxk = func.evalf(subs={x: xk, e: E})
+        fxkm1 = func.evalf(subs={x: xkm1}).round(20)
+        fxk = func.evalf(subs={x: xk}).round(20)
 
         # Cálculo del siguiente valor
         # Si (fxm1 - fxk) = 0, xkp1 es zoo (infinidad compleja, x/0) o nan (0/0)
         xkp1 = xk - (fxk)*((xkm1 - xk)/(fxkm1 - fxk))
         if (xkp1 is zoo) or (xkp1 is nan):
-            print("\n| {105} |".format(
+            print("\n| {:^105} |".format(
                 "Valor inicial desafortunado (división entre 0). Intenta con otro."))
             input("\nPresiona enter para continuar.")
             trigger_metodo()
@@ -520,7 +528,7 @@ def secante(xkm1, xk, max_it, toler):
         # Imprimir la tabla de los cálculos
         # Si el err_rel no existe, imprimir N/A
         if (err_rel is zoo) or (err_rel is nan):
-            fila = [it+1, float(xkm1), float(xk), float(fxkm1),
+            fila = [it+1, float(xkm1).round(20), float(xk).round(20), float(fxkm1),
                     float(fxk), float(xkp1), " N/A"]
             print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
         else:
