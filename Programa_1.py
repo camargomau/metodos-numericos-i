@@ -1,44 +1,13 @@
+from utilidades import *
 from sympy import Abs, diff, Float, nan, printing, Pow, real_root, Rational, sympify, Symbol, zoo
 
 # x es la variable
 x = Symbol('x')
 
 #########
-# Otros #
-#########
-
-def clear_screen():
-    import os
-    if os.name == 'posix':
-        _ = os.system('clear')
-    else:
-        _ = os.system('cls')
-
-def portada():
-    clear_screen()
-    datos = ["Universidad Nacional Autónoma de México",
-             "Facultad de Estudios Superiores Acatlán",
-             "Matemáticas Aplicadas y Computación\n",
-             "{:-^47}\n".format(""),
-             "Programa 1:",
-             "Métodos de Solución de Ecuaciones No Lineales\n",
-             "Alcaraz López Bella Samara",
-             "Camargo Badillo Luis Mauricio",
-             "Leon Valdés Duhart Guillermo Arturo",
-             "López Díaz Diego\n",
-             "Métodos Numéricos I",
-             "Grupo 1301\n",
-             "{:-^47}\n".format(""),
-             "Presiona enter para continuar"]
-
-    for dato in datos:
-        print(" {:^47} ".format(dato))
-
-    input()
-
-#########
 # Menús #
 #########
+
 
 def menu_metodos():
     global eleccion_metodo
@@ -48,12 +17,11 @@ def menu_metodos():
         3: "Método de Newton",
         4: "Método de la Secante",
 
-        0: "Salir del programa"
+        0: "Regresar"
     }
 
     clear_screen()
-
-    print("Métodos disponibles:\n")
+    print("Métodos de solución de ecuaciones disponibles:\n")
     for opcion in opciones_metodos.keys():
         print(f"{opcion} --- {opciones_metodos[opcion]}")
 
@@ -73,6 +41,7 @@ def menu_metodos():
     if eleccion_metodo != 0:
         menu_funciones()
 
+
 def menu_funciones():
     global func, eleccion_funcion
     opciones_funciones = {
@@ -82,9 +51,9 @@ def menu_funciones():
         4: "x**3 + 6*(x**2) + 9.4*x + 2.5",
 
         # Funciones de los ejercicios del portafolio
-        #5: "((50 + (37.49/x**2)) * (x - 0.197)) - (0.08205*348.15)",
-        #6: "x * ((15*x)/(15+2*x))**(2/3) - ((0.015*20)/(15*sqrt(0.001)))",
-        #7: "(((2+0.4*x**2)/2.4)**3.5 - 1)/(0.7*x**2*(-0.383)) - (sqrt(1-x**2)+(((x**2*(-0.383))/2)/(1+sqrt(1-x**2))))**(-1)",
+        # 5: "((50 + (37.49/x**2)) * (x - 0.197)) - (0.08205*348.15)",
+        # 6: "x * ((15*x)/(15+2*x))**(2/3) - ((0.015*20)/(15*sqrt(0.001)))",
+        # 7: "(((2+0.4*x**2)/2.4)**3.5 - 1)/(0.7*x**2*(-0.383)) - (sqrt(1-x**2)+(((x**2*(-0.383))/2)/(1+sqrt(1-x**2))))**(-1)",
 
         0: "Regresar al menú de métodos"
     }
@@ -129,7 +98,9 @@ def menu_funciones():
 ###########
 
 # Introducción de iteraciones máximas, tolerancia y sus checks
-def maxIt_toler_checks():
+
+
+def maxit_toler_checks():
     while True:
         try:
             max_it = int(input("• Máximo de iteraciones: "))
@@ -158,6 +129,8 @@ def maxIt_toler_checks():
     return max_it, toler
 
 # Según las elecciones del usuario en el menú, utilizar el método deseado
+
+
 def trigger_metodo():
     global deriv
     clear_screen()
@@ -214,7 +187,7 @@ def trigger_metodo():
                     f"Es posible que no haya una raíz en el intervalo [{float(a)}, {float(b)}]. Intenta con otro intervalo.\n")
 
         # Iteraciones máximas, tolerancia y sus checks
-        max_it, toler = maxIt_toler_checks()
+        max_it, toler = maxit_toler_checks()
 
         # Todo correcto si se llegó hasta aquí
         # Encabezado de la tabla
@@ -228,7 +201,7 @@ def trigger_metodo():
             "| {:-^3} | {:-^14} | {:-^14} | {:-^14} | {:-^14} | {:-^14} | {:-^14} |".format(*encabezado[1]))
 
         # Procesar e imprimir resultados
-        raiz, err_rel, it = biseccion_posFalsa(a, b, max_it, toler)
+        raiz, err_rel, it = biseccion_posfalsa(a, b, max_it, toler)
 
         if err_rel == 0:
             print(
@@ -287,7 +260,7 @@ def trigger_metodo():
                     f"\nLa derivada evaluada en {float(x0)} es igual a 0. Intenta con otro valor.\n")
 
         # Iteraciones máximas, tolerancia y sus checks
-        max_it, toler = maxIt_toler_checks()
+        max_it, toler = maxit_toler_checks()
 
         # Todo correcto si se llegó hasta aquí
         # Encabezado de la tabla
@@ -349,7 +322,7 @@ def trigger_metodo():
             break
 
         # Iteraciones máximas, tolerancia y sus checks
-        max_it, toler = maxIt_toler_checks()
+        max_it, toler = maxit_toler_checks()
 
         # Todo correcto si se llegó hasta aquí
         # Encabezado de la tabla
@@ -384,11 +357,14 @@ def trigger_metodo():
     fin_metodo()
 
 # Función para el método de bisección *y* el de la posición falsa
-def biseccion_posFalsa(a, b, max_it, toler):
+
+
+def biseccion_posfalsa(a, b, max_it, toler):
     for it in range(max_it):
         fa = func.evalf(subs={x: a}).round(20)
         fb = func.evalf(subs={x: b}).round(20)
-        assert (fa * fb) <= 0, "f(a) y f(b) deberían tener signos diferentes; en teoría nunca debería imprimirme."
+        assert (
+            fa * fb) <= 0, "f(a) y f(b) deberían tener signos diferentes; en teoría nunca debería imprimirme."
 
         # Calcular el punto medio, según el método seleccionado
         # Bisección
@@ -413,11 +389,13 @@ def biseccion_posFalsa(a, b, max_it, toler):
         if (it == 0) or (err_rel is zoo) or (err_rel is nan):
             fila = [it+1, float(a), float(b), float(fa), float(fb),
                     float(p), " N/A"]
-            print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
+            print(
+                "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
         else:
             fila = [it+1, float(a), float(b), float(fa), float(fb),
                     float(p), float(err_rel)]
-            print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
+            print(
+                "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
 
         it += 1
 
@@ -449,6 +427,7 @@ def biseccion_posFalsa(a, b, max_it, toler):
                 else:
                     a = p
                     anterior = p
+
 
 def newton(xk, max_it, toler):
     for it in range(max_it):
@@ -505,6 +484,7 @@ def newton(xk, max_it, toler):
         else:
             xk = xkp1
 
+
 def secante(xkm1, xk, max_it, toler):
     for it in range(max_it):
         # Evaluación de la función en x_k y x_k-1
@@ -528,13 +508,15 @@ def secante(xkm1, xk, max_it, toler):
         # Imprimir la tabla de los cálculos
         # Si el err_rel no existe, imprimir N/A
         if (err_rel is zoo) or (err_rel is nan):
-            fila = [it+1, float(xkm1).round(20), float(xk).round(20), float(fxkm1),
+            fila = [it+1, float(xkm1), float(xk), float(fxkm1),
                     float(fxk), float(xkp1), " N/A"]
-            print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
+            print(
+                "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:<14} |".format(*fila))
         else:
             fila = [it+1, float(xkm1), float(xk), float(fxkm1),
                     float(fxk), float(xkp1), float(err_rel)]
-            print("| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
+            print(
+                "| {:^3} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} | {:< 14.6g} |".format(*fila))
 
         it += 1
 
@@ -552,6 +534,7 @@ def secante(xkm1, xk, max_it, toler):
         else:
             xkm1 = xk
             xk = xkp1
+
 
 def fin_metodo():
     clear_screen()
@@ -583,5 +566,7 @@ def fin_metodo():
 # Principal #
 #############
 
-portada()
-menu_metodos()
+
+if __name__ == "__main__":
+    portada("Programa 1")
+    menu_metodos()
