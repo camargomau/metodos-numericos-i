@@ -183,5 +183,5 @@ def matrices():
 #############
 
 if __name__ == "__main__":
-    portada("Programa 2")
+    portada("Programa 2", "Matrices y Solución de Ecuaciones Lineales")
     matrices()

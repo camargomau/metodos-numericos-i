@@ -568,5 +568,5 @@ def fin_metodo():
 
 
 if __name__ == "__main__":
-    portada("Programa 1")
+    portada("Programa 1", "Solución de Ecuaciones No Lineales")
     menu_metodos()

@@ -39,5 +39,5 @@ def menu_principal():
 
 
 if __name__ == "__main__":
-    portada("Paquete de Programas")
+    portada("Paquete de Programas", "Entrega Final")
     menu_principal()

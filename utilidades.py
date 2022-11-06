@@ -9,14 +9,14 @@ def clear_screen():
         _ = os.system('cls')
 
 
-def portada(titulo):
+def portada(titulo, desc):
     clear_screen()
     datos = ["Universidad Nacional Autónoma de México",
              "Facultad de Estudios Superiores Acatlán",
              "Matemáticas Aplicadas y Computación\n",
              "{:-^47}\n".format(""),
              titulo,
-             "Métodos de Solución de Ecuaciones No Lineales\n",
+             f"{desc}\n",
              "Alcaraz López Bella Samara",
              "Camargo Badillo Luis Mauricio",
              "Leon Valdés Duhart Guillermo Arturo",
