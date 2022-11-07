@@ -1,18 +1,16 @@
 from utilidades import *
 from copy import deepcopy
-from sympy import Float, Matrix, pretty, sympify
+from sympy import Matrix, pretty, sympify
 
 ##########################
 # Clase Matriz para todo #
 ##########################
 
 class Matriz:
-    # Atributos que siempre tienen un valor
     principal = list(list())
     vect_ind = list()
     dim = int()
-    # Atributos que no siempre tienen un valor
-    determinante = None
+    determinante = 1
     triangulada = None
 
     # Constructor
@@ -88,17 +86,22 @@ class Matriz:
             # Segundo ciclo para el renglón modificado; [piv+1, dim-1]
             # Modificamos los renglones a partir del siguiente del pivote hasta el último
             for renMod in range(piv+1, self.dim):
+                # Intercambiar renglones cuando el pivote sea 0, para evitar división entre 0
+                # Una mejor versión que realiza pivoteo es:
+                # > if abs(self.triangulada[renMod][piv]) > abs(self.triangulada[piv][piv]):
+                # No obstante, no la utilicé para no intercambiar renglones a menos que sea absolutamente necesario
+                # Espero que sympy sea suficiente para compensar contra el error de redondeo
+                if self.triangulada[piv][piv] == 0:
+                    self.triangulada[piv], self.triangulada[renMod] = self.triangulada[renMod], self.triangulada[piv]
+                    self.determinante = -self.determinante
+
                 # Si el elemento que está debajo del pivote ya es 0, no hace falta procesar su renglón
                 if self.triangulada[renMod][piv] == 0:
                     continue
 
-                # El factor se define de forma que el elemento que está debajo del
-                # pivote se vuelva 0
-                if self.triangulada[piv][piv] != 0:
-                    factor = -(self.triangulada[renMod]
-                               [piv]/self.triangulada[piv][piv])
-                else:
-                    factor = 0
+                # El factor se define de forma que el elemento que está debajo del pivote se vuelva 0
+                factor = -(self.triangulada[renMod]
+                        [piv]/self.triangulada[piv][piv])
 
                 # Tercer ciclo para ir iterando por las columnas de la matriz
                 # Esto nos permite iterar por cada elemento del renMod
@@ -118,7 +121,6 @@ class Matriz:
         if self.triangulada is None:
             self.triangular()
 
-        self.determinante = Float(1)
         for i in range(self.dim):
             self.determinante *= self.triangulada[i][i]
 
