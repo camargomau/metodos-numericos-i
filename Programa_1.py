@@ -97,40 +97,8 @@ def menu_funciones():
 # Métodos #
 ###########
 
-# Introducción de iteraciones máximas, tolerancia y sus checks
-
-
-def maxit_toler_checks():
-    while True:
-        try:
-            max_it = int(input("• Máximo de iteraciones: "))
-        except:
-            print("\nIntroduzca un número entero.\n")
-            continue
-
-        if max_it > 0:
-            break
-        else:
-            print("\nIntroduzca un número entero mayor que 0.\n")
-
-    # Tolerancia y sus checks
-    while True:
-        try:
-            toler = Float(input("• Tolerancia (error relativo): "), 20)
-        except:
-            print("\nIntroduzca un número real.\n")
-            continue
-
-        if (toler > 0) and (toler < 1):
-            break
-        else:
-            print("\nIntroduzca un valor en (0, 1).\n")
-
-    return max_it, toler
 
 # Según las elecciones del usuario en el menú, utilizar el método deseado
-
-
 def trigger_metodo():
     global deriv
     clear_screen()

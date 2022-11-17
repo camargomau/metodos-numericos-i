@@ -19,7 +19,7 @@ def menu_principal():
 
         while True:
             try:
-                eleccion = int(input("\n¿Qué procedimiento desea utilizar? "))
+                eleccion = int(input("\n¿Qué desea hacer? "))
             except:
                 print("\nIntroduzca un número entero.")
                 continue
@@ -39,5 +39,5 @@ def menu_principal():
 
 
 if __name__ == "__main__":
-    portada("Paquete de Programas", "Entrega Final")
+    portada("Paquete de Programas", "Entrega 3")
     menu_principal()
