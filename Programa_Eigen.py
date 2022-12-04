@@ -113,7 +113,6 @@ class EigenMatriz:
         fila_inic = "| {:^3} | {:^15} | {:^15} | {:^14.6g} | {:^15} | {:^14.6g} |"
         fila_inic_strend = "| {:^3} | {:^15} | {:^15} | {:^14.6g} | {:^15} | {:^14} |"
         fila = "| {:^3} | {:^15} | {:^15} | {:^14} | {:^15} | {:^14} |"
-        fila_sep = "| {:^3} | {:^15} | {:^15} | {:^14} | {:^15} | {:^14} |"
 
         # Imprimir el encabezado y el separador
         print("| {:^3} | {:^15} | {:^15} | {:^14} | {:^15} | {:^14} |".format(
@@ -156,7 +155,7 @@ class EigenMatriz:
                             float(producto[i])), "", "⎢{:^ 11.6g}⎥".format(float(eigenvector[i])), ""]
                     print(fila.format(*impr))
             # Imprimir espacio en blanco al final de cada vector
-            print(fila_sep.format(*separador))
+            print(fila.format(*separador))
 
             # Determinar si se sigue iterando o no, según la tolerancia
             if err_abs <= toler:
