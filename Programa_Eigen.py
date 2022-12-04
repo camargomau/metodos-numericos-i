@@ -13,6 +13,8 @@ class EigenMatriz:
 
     eigenvalor_max = None
     eigenvalor_min = None
+    eigenvector_max = None
+    eigenvector_min = None
 
     def __init__(self):
         # Obtención de dimensión e inicialización
@@ -171,21 +173,27 @@ class EigenMatriz:
         if err_abs <= toler:
             print(
                 f"\nSe convergió satisfactoriamente con una tolerancia menor o igual a {float(toler)}:\n")
-            print(f"• El valor propio obtenido fue {float(eigenvalue)}")
+            print(f"• El valor propio obtenido fue: {float(eigenvalue)}")
+            print(
+                f"• El vector propio correspondiente obtenido fue:\n\n{pretty(Matrix([Float(x) for x in eigenvector]))}")
             print(
                 f"\nSe necesitó de {it} iteraciones y este cálculo tiene un error absoluto de {float(err_abs)}.")
 
             if mayor:
                 self.eigenvalor_max = eigenvalue
+                self.eigenvector_max = eigenvector
             else:
                 self.eigenvalor_min = eigenvalue
+                self.eigenvector_min = eigenvector
 
         # Si no se convergió
         else:
             print(
                 f"\nSe alcanzaron las {max_it} iteraciones máximas. No se pudo converger con una tolerancia menor o igual a {float(toler)}.\n")
             print(
-                f"• La última aproximación a un valor propio fue {float(eigenvalue)}")
+                f"• La última aproximación a un valor propio fue: {float(eigenvalue)}")
+            print(
+                f"• La última aproximación del vector propio correspondiente fue:\n\n{pretty(Matrix([Float(x) for x in eigenvector]))}")
             print(
                 f"\nEste cálculo tiene un error absoluto de {float(err_abs)}.")
 
@@ -193,6 +201,7 @@ class EigenMatriz:
                 "\n¿Desea reintentar, esta vez con otro vector inicial, más iteraciones u otra tolerancia? (S/n) ", 'S', 'N')
             if resp == 'S' or resp == 's':
                 self.eigenvalores()
+
 
 def eigen():
     misma = 'O'
@@ -205,12 +214,15 @@ def eigen():
 
         la_matriz.eigenvalores()
 
-        cont = bool_option("\n¿Desea calcular otro valor propio, ya sea de esta o de otra matriz? (S/n) ", 'S', 'N')
+        cont = bool_option(
+            "\n¿Desea calcular otro valor propio, ya sea de esta o de otra matriz? (S/n) ", 'S', 'N')
         if cont == 'S' or cont == 's':
-            misma = bool_option("--> ¿Desea utilizar la (M)isma u (O)tra matriz? (M/O) ", 'M', 'O')
+            misma = bool_option(
+                "--> ¿Desea utilizar la (M)isma u (O)tra matriz? (M/O) ", 'M', 'O')
             continue
         else:
             break
+
 
 if __name__ == "__main__":
     eigen()
