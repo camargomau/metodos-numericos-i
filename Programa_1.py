@@ -40,8 +40,6 @@ def menu_metodos():
 
     if eleccion_metodo != 0:
         menu_funciones()
-    else:
-        return
 
 
 def menu_funciones():
@@ -92,6 +90,8 @@ def menu_funciones():
         func = sympify(opciones_funciones[eleccion_funcion]).replace(lambda expr: isinstance(
             expr, Pow) and isinstance(expr.exp, Rational), lambda expr: real_root(expr.base, expr.exp.q)**expr.exp.p)
         trigger_metodo()
+    else:
+        menu_metodos()
 
 ###########
 # Métodos #
