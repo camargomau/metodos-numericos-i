@@ -58,10 +58,11 @@ class EigenMatriz:
 
     # Calcular un eigenvalor por el método de potencias
     def eigenvalores(self):
+        clear_screen()
         mayor_menor = bool_option(
-            "¿Desea obtener el valor propio de ma(Y)or o de me(N)or magnitud? (Y/N) ", 'Y', 'N')
+            "¿Desea obtener el valor propio de (M)ayor magnitud o el de me(N)or magnitud? (M/N) ", 'M', 'N')
         # Si se desea obtener el mayor, se utiliza la matriz original
-        if mayor_menor == 'Y' or mayor_menor == 'y':
+        if mayor_menor == 'M' or mayor_menor == 'm':
             mayor = True
             mult_matriz = deepcopy(self.sp_matriz)
         # Para el menor, se utiliza la matriz inversa
@@ -71,9 +72,8 @@ class EigenMatriz:
             if self.sp_matriz_inv is not None:
                 mult_matriz = deepcopy(self.sp_matriz_inv)
             else:
-                print("La matriz tiene determinante de 0, por lo que no es invertible, y por consiguiente, no es posible utilizar el método de potencias para obtener el valor propio de menor magnitud.")
-                ##################################################
-                # Dar opciones a partir de aquí
+                print("\n--> La matriz tiene determinante de 0, por lo que no es invertible, y por consiguiente, no es posible utilizar el método de potencias para obtener el valor propio de menor magnitud.")
+                return
 
         # Se inicia con un vector estimación
         vect_estim = [0 for _ in range(self.dim)]
@@ -97,6 +97,7 @@ class EigenMatriz:
         max_it, toler = maxit_toler_checks()
 
         # Preparación de la tabla
+        clear_screen()
         print("Tabla correspondiente a los cálculos:\n")
         if mayor:
             encabezado = ["k", "x^(k)", "Ax^(k)", "λ^(k+1)",
@@ -107,22 +108,26 @@ class EigenMatriz:
         separador = ["", "", "", "", "", ""]
 
         # Definición de strings que se usarán para imprimir los valores de la tabla
-        fila_inic = "| {:^3} | {:^13} | {:^13} | {:^14.6g} | {:^13} | {:^14.6g} |"
-        fila_inic_strend = "| {:^3} | {:^13} | {:^13} | {:^14.6g} | {:^13} | {:^14} |"
-        fila = "| {:^3} | {:^13} | {:^13} | {:^14} | {:^13} | {:^14} |"
-        fila_sep = "| {:^3} | {:^13} | {:^13} | {:^14} | {:^13} | {:^14} |"
+        fila_inic = "| {:^3} | {:^15} | {:^15} | {:^14.6g} | {:^15} | {:^14.6g} |"
+        fila_inic_strend = "| {:^3} | {:^15} | {:^15} | {:^14.6g} | {:^15} | {:^14} |"
+        fila = "| {:^3} | {:^15} | {:^15} | {:^14} | {:^15} | {:^14} |"
+        fila_sep = "| {:^3} | {:^15} | {:^15} | {:^14} | {:^15} | {:^14} |"
 
         # Imprimir el encabezado y el separador
-        print("| {:^3} | {:^13} | {:^13} | {:^14} | {:^13} | {:^14} |".format(
+        print("| {:^3} | {:^15} | {:^15} | {:^14} | {:^15} | {:^14} |".format(
             *encabezado))
         print(
-            "| {:-^3} | {:-^13} | {:-^13} | {:-^14} | {:-^13} | {:-^14} |".format(*separador))
+            "| {:-^3} | {:-^15} | {:-^15} | {:-^14} | {:-^15} | {:-^14} |".format(*separador))
 
         prec_eigenvalue = 0
         for it in range(max_it):
             producto = mult_matriz * vect_estim
-            eigenvalue = Abs(max(producto))
-            eigenvector = producto / max(producto)
+            producto_abs = [Abs(x) for x in producto]
+
+            max_abs_index = producto_abs.index(max(producto_abs))
+            eigenvalue = producto[max_abs_index]
+
+            eigenvector = producto / eigenvalue
             err_abs = Abs(eigenvalue - prec_eigenvalue)
 
             # Impresión de resultados en la tabla
@@ -132,21 +137,21 @@ class EigenMatriz:
                 if i == 0:
                     # Si se trata de la primera iteración, el error es "N/A"
                     if it == 0:
-                        impr = [it, "⎡{:^ 9.6g}⎤".format(float(vect_estim[i])), "⎡{:^ 9.6g}⎤".format(float(
-                            producto[i])), float(eigenvalue), "⎡{:^ 9.6g}⎤".format(float(eigenvector[i])), "N/A"]
+                        impr = [it, "⎡{:^ 11.6g}⎤".format(float(vect_estim[i])), "⎡{:^ 11.6g}⎤".format(float(
+                            producto[i])), float(eigenvalue), "⎡{:^ 11.6g}⎤".format(float(eigenvector[i])), "N/A"]
                         print(fila_inic_strend.format(*impr))
                     else:
-                        impr = [it, "⎡{:^ 9.6g}⎤".format(float(vect_estim[i])), "⎡{:^ 9.6g}⎤".format(float(
-                            producto[i])), float(eigenvalue), "⎡{:^ 9.6g}⎤".format(float(eigenvector[i])), float(err_abs)]
+                        impr = [it, "⎡{:^ 11.6g}⎤".format(float(vect_estim[i])), "⎡{:^ 11.6g}⎤".format(float(
+                            producto[i])), float(eigenvalue), "⎡{:^ 11.6g}⎤".format(float(eigenvector[i])), float(err_abs)]
                         print(fila_inic.format(*impr))
                 # Si se trata de cualquier otra fila, no imprimir ni el eigenvalor ni el error
                 else:
                     if i == self.dim-1:
-                        impr = ["", "⎣{:^ 9.6g}⎦".format(float(vect_estim[i])), "⎣{:^ 9.6g}⎦".format(
-                            float(producto[i])), "", "⎣{:^ 9.6g}⎦".format(float(eigenvector[i])), ""]
+                        impr = ["", "⎣{:^ 11.6g}⎦".format(float(vect_estim[i])), "⎣{:^ 11.6g}⎦".format(
+                            float(producto[i])), "", "⎣{:^ 11.6g}⎦".format(float(eigenvector[i])), ""]
                     else:
-                        impr = ["", "⎢{:^ 9.6g}⎥".format(float(vect_estim[i])), "⎢{:^ 9.6g}⎥".format(
-                            float(producto[i])), "", "⎢{:^ 9.6g}⎥".format(float(eigenvector[i])), ""]
+                        impr = ["", "⎢{:^ 11.6g}⎥".format(float(vect_estim[i])), "⎢{:^ 11.6g}⎥".format(
+                            float(producto[i])), "", "⎢{:^ 11.6g}⎥".format(float(eigenvector[i])), ""]
                     print(fila.format(*impr))
             # Imprimir espacio en blanco al final de cada vector
             print(fila_sep.format(*separador))
@@ -175,20 +180,37 @@ class EigenMatriz:
             else:
                 self.eigenvalor_min = eigenvalue
 
-            ##################################################
-            # Dar opciones para calcularlo de nuevo o algo así
         # Si no se convergió
         else:
             print(
-                f"\nSe alcanzaron las {max_it} iteraciones máximas. No se pudo converger con una tolerancia menor o igual a {float(toler)}.")
+                f"\nSe alcanzaron las {max_it} iteraciones máximas. No se pudo converger con una tolerancia menor o igual a {float(toler)}.\n")
             print(
                 f"• La última aproximación a un valor propio fue {float(eigenvalue)}")
             print(
                 f"\nEste cálculo tiene un error absoluto de {float(err_abs)}.")
-            ##################################################
-            # Dar opciones para corregir la matriz (¿acaso necesitamos EDD?), dar otro vector inicial, otra tolerancia/maxit, o cosas así
 
+            resp = bool_option(
+                "\n¿Desea reintentar, esta vez con otro vector inicial, más iteraciones u otra tolerancia? (S/n) ", 'S', 'N')
+            if resp == 'S' or resp == 's':
+                self.eigenvalores()
 
-la_matriz = EigenMatriz()
-la_matriz.corregir()
-la_matriz.eigenvalores()
+def eigen():
+    misma = 'O'
+    while True:
+        if misma == 'O' or misma == 'o':
+            clear_screen()
+            print("Obtención del valor propio máximo y del mínimo de una matriz\n")
+            la_matriz = EigenMatriz()
+            la_matriz.corregir()
+
+        la_matriz.eigenvalores()
+
+        cont = bool_option("\n¿Desea calcular otro valor propio, ya sea de esta o de otra matriz? (S/n) ", 'S', 'N')
+        if cont == 'S' or cont == 's':
+            misma = bool_option("--> ¿Desea utilizar la (M)isma u (O)tra matriz? (M/O) ", 'M', 'O')
+            continue
+        else:
+            break
+
+if __name__ == "__main__":
+    eigen()
