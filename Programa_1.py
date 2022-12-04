@@ -17,7 +17,7 @@ def menu_metodos():
         3: "Método de Newton",
         4: "Método de la Secante",
 
-        0: "Regresar"
+        0: "Salir"
     }
 
     clear_screen()
@@ -40,6 +40,8 @@ def menu_metodos():
 
     if eleccion_metodo != 0:
         menu_funciones()
+    else:
+        return
 
 
 def menu_funciones():
@@ -86,12 +88,10 @@ def menu_funciones():
 
     if eleccion_funcion != 0:
         # func es la función elegida por el usuario
-        # el .replace() es para evaluar obtener las ráices reales de toda raíz que se calcule
+        # el .replace() es para solo calcular las raíces reales de toda raíz que se encuentre (ninguna imaginaria)
         func = sympify(opciones_funciones[eleccion_funcion]).replace(lambda expr: isinstance(
             expr, Pow) and isinstance(expr.exp, Rational), lambda expr: real_root(expr.base, expr.exp.q)**expr.exp.p)
         trigger_metodo()
-    else:
-        menu_metodos()
 
 ###########
 # Métodos #
@@ -113,16 +113,8 @@ def trigger_metodo():
 
         # Intervalo y sus checks
         while True:
-            # Como pueden haber funciones sin ninguna raíz, dar la opción de regresar
-            print("(introduzca una 'x' si desea regresar al menú de funciones)")
-
-            a = input("• Valor de a (extremo izquierdo del intervalo): ")
-            if (a == 'x') or (a == 'X'):
-                menu_funciones()
-
             try:
-
-                a = Float(a, 20)
+                a = Float(input("• Valor de a (extremo izquierdo del intervalo): "), 20)
                 b = Float(input("• Valor de b (extremo derecho): "), 20)
             except:
                 print("\nIntroduzca números reales.\n")
@@ -202,14 +194,8 @@ def trigger_metodo():
 
         # x0 y sus checks
         while True:
-            print("(introduzca una 'x' si desea regresar al menú de funciones)")
-
-            x0 = input("• Valor inicial (x_0): ")
-            if (x0 == 'x') or (x0 == 'X'):
-                menu_funciones()
-
             try:
-                x0 = Float(x0, 20)
+                x0 = Float(input("• Valor inicial (x_0): "), 20)
             except:
                 print("\nIntroduzca un número real.\n")
                 continue
@@ -266,14 +252,8 @@ def trigger_metodo():
 
         # Valores iniciales y sus checks
         while True:
-            print("(introduzca una 'x' si desea regresar al menú de funciones)")
-
-            x0 = input("• Valor de x_0: ")
-            if (x0 == 'x') or (x0 == 'X'):
-                menu_funciones()
-
             try:
-                x0 = Float(x0, 20)
+                x0 = Float(input("• Valor de x_0: "), 20)
                 x1 = Float(input("• Valor de x_1: "), 20)
             except:
                 print("\nIntroduzca números reales.\n")
