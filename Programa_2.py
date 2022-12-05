@@ -162,7 +162,6 @@ class Matriz:
                 "El determinante de la matriz es 0, por lo que el sistema asociado no tiene solución.")
         else:
             print("Solución al sistema asociado a la matriz\n")
-            # Faltan checks para EDD
 
             # Inicializar vectores de solución
             self.vect_soluc = [0 for _ in range(self.dim)]
@@ -177,9 +176,7 @@ class Matriz:
 
             # Encabezado de la tabla
             clear_screen()
-            encabezado = ["x_{:<2}".format(i+1) for i in range(self.dim)]
-            encabezado.insert(0, "it")
-            encabezado.append("norma esp.")
+            encabezado = ["it", *["x_{:<2}".format(i+1) for i in range(self.dim)], "norma esp."]
             encabezado_print = "| {:^3} |"
             for i in range(self.dim+1):
                 encabezado_print += " {:^14} |"
@@ -194,7 +191,7 @@ class Matriz:
             for i in range(self.dim):
                 fila += " {:< 14.6g} |"
             # Fila 0 que no tiene error absoluto
-            fila_0 = fila + " {:^14} |"
+            fila_0 = fila + " {:<14} |"
             # Las demás filas sí tienen error absoluto
             fila += " {:< 14.6g} |"
 
@@ -202,7 +199,7 @@ class Matriz:
             print(encabezado_print.format(*encabezado))
             print(div_print.format(*div))
             print(fila_0.format(*[0, *[float(elem)
-                  for elem in vect_soluc_prec], "N/A"]))
+                  for elem in vect_soluc_prec], " N/A"]))
 
             # Jacobi hasta llegar a la iteración máxima
             for it in range(max_it):
@@ -223,9 +220,7 @@ class Matriz:
 
                 # Crear otro arreglo igual al de la solución, pero con float
                 # Agregarle it+1 al inicio, la norma espectral al final
-                vect_impr = [float(elem) for elem in self.vect_soluc]
-                vect_impr.insert(0, it+1)
-                vect_impr.append(float(norma_espec))
+                vect_impr = [it+1, *[float(elem) for elem in self.vect_soluc], float(norma_espec)]
 
                 # Imprimir solución actual y norma espectral
                 print(fila.format(*vect_impr))

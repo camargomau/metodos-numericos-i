@@ -98,25 +98,25 @@ def insertar_reales(entrada, size=1):
 
     return entrada
 
-# Checks para la entrada de enteros, con opción de un valor máximo
+# Checks para la entrada de enteros en [1, maxim]; maxim es opcional
 def int_input(prompt, maxim):
     while True:
         try:
             ans = int(input(prompt))
 
             if maxim is None:
-                if ans < 0:
+                if ans < 1:
                     raise IndexError
             else:
-                if ans < 0 or ans >= maxim:
+                if ans < 1 or ans > maxim:
                     raise IndexError
 
             break
         except IndexError:
             if maxim is None:
-                prompt = "--> Introduzca un número entero mayor o igual que 0: "
+                prompt = "--> Introduzca un número entero mayor o igual que 1: "
             else:
-                prompt = f"--> Introduzca un número entero entero del 0 al {maxim-1}: "
+                prompt = f"--> Introduzca un número entero entero del 1 al {maxim}: "
         except:
             prompt = "--> Introduzca un número entero: "
 
