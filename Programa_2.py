@@ -81,23 +81,21 @@ class Matriz:
                 corregir = bool_option(
                     "¿Desea corregir la matriz o el vector? (M/V) ", 'M', 'V')
 
-                print("\n(considere que los índices inician en 0)")
-
                 if corregir == 'm' or corregir == 'M':
                     ren = int_input(
-                        "• Introduzca el número del renglón del valor que desea corregir: ", self.dim)
+                        "• Introduzca el número del renglón del valor que desea corregir: ", self.dim) - 1
                     col = int_input(
-                        "• Introduzca el número de la columna del valor que desea corregir: ", self.dim)
+                        "• Introduzca el número de la columna del valor que desea corregir: ", self.dim) - 1
 
                     entrada = input(
-                        f"--> Introduzca el nuevo valor del elemento [{ren}][{col}]: ")
+                        f"--> Introduzca el nuevo valor del elemento [{ren+1}][{col+1}]: ")
                     self.principal[ren][col] = insertar_reales(entrada)
                 elif corregir == 'v' or corregir == 'V':
                     pos = int_input(
-                        "• Introduzca la posición del elemento que desea corregir: ", self.dim)
+                        "• Introduzca la posición del elemento que desea corregir: ", self.dim) - 1
 
                     entrada = input(
-                        f"--> Introduzca el nuevo valor del elemento [{pos}]: ")
+                        f"--> Introduzca el nuevo valor del elemento [{pos+1}]: ")
                     self.vect_ind[pos] = insertar_reales(entrada)
             else:
                 break
