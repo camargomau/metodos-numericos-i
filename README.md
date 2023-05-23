@@ -1,3 +1,3 @@
-# Métodos Numéricos
+# Métodos Numéricos I: Final Project
 
-En este repositorio guardo los programas que hice durante los cursos de Métodos Numéricos de [Matemáticas Aplicadas y Computación](https://www.acatlan.unam.mx/index.php?id=31).
+This is the repository where I store all the Python programs that I coded for the final project of the Métodos Numéricos I course that's part of [Matemáticas Aplicadas y Computación](https://www.acatlan.unam.mx/index.php?id=31).

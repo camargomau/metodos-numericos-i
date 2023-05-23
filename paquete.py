@@ -1,6 +1,6 @@
-from Programa_1 import *
-from Programa_2 import *
-from Programa_Eigen import *
+from programa_1 import *
+from programa_2 import *
+from programa_eigen import *
 from utilidades import *
 
 
